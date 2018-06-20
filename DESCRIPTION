@@ -1,0 +1,19 @@
+Package: RCflux
+Title: Calculate Closed-Chamber Gas Fluxes
+Version: 0.4
+Authors@R: person("Peter", "Levy", email = "plevy@ceh.ac.uk", role = c("aut", "cre"))
+Description: Calculate closed-chamber gas fluxes.
+Depends:
+    R (>= 3.2.3),
+    plyr,
+    dplyr,
+    stringr,
+    yaml,
+    tools,
+    nlme,
+    ggplot2,
+    HMR,
+    readxl
+License: What license is it under?
+LazyData: true
+RoxygenNote: 6.0.1
