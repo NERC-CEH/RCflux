@@ -1,6 +1,6 @@
 Package: RCflux
 Title: Calculate Closed-Chamber Gas Fluxes
-Version: 0.4
+Version: 0.5
 Authors@R: person("Peter", "Levy", email = "plevy@ceh.ac.uk", role = c("aut", "cre"))
 Description: Calculate closed-chamber gas fluxes.
 Depends:
@@ -14,6 +14,9 @@ Depends:
     ggplot2,
     HMR,
     readxl
-License: What license is it under?
+License: MIT
+Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr

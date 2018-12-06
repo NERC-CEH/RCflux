@@ -2,7 +2,6 @@
 
 export(calcFlux)
 export(convert_GC_output)
-export(excelToCsv)
 export(read_GC_input)
 export(read_GC_output)
 export(standardiseNames)
