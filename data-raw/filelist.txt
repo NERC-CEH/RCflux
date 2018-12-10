@@ -1,0 +1,3 @@
+dataSource: aGC  # Options are aGC, GC, QCL, GodChamber, EGM, VaisalaChamber
+gasName: [N2O] # not used if dataSource = aGC
+"S:/DISE_Instrumentation/GC/Agilent/GC_data/Laure/ND_Avril17_Mai02.csv"

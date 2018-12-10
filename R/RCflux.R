@@ -18,23 +18,42 @@
 #'
 #' Reads Agilent GC output
 #' @param fname A GC output file from the Agilent GC.
+#' @param dataSource A character string identifying the source of the data: "aGC" from the Agilent GC, or "SRUC_GC" from the SRUC_GC.
 #' @keywords Agilent GC output
 #' @export
 #' @seealso \code{\link{convert_GC_output}} for the higher-level function which calls this.
 
-read_GC_output <- function(fname){
+read_GC_output <- function(fname, dataSource = "aGC"){
 #fname <- "c:/GC_data/CINAG_2016_06_16b_CM/CINAG_7-16b 2016-08-01 09-56-13/CINAG_2016_06_16b_CM.xls"
-#fname <- "F:/GC_data/CINAG_2016_06_16c_CM/CINAG_1-16a_1-6b 2016-08-01 16-42-58/CINAG_2016_06_16c_CM.xls"
-  df <- read_excel(fname, sheet="Sheet1", 
-    col_types = c("text", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text"))
-  names(df) <- make.names(names(df))
-  df <- subset(df,  !is.na(df$Area))
+#fname <- "../data-raw/SRUC_template_GC_input.xlsx"
+  if (dataSource == "SRUC_GC"){
+    df <- read_excel(fname, sheet="GC_data")#, 
+    #col_types = c("text", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text"))
+    names(df) <- make.names(names(df))
+    names(df)
+    df <- df[ c("Sample", "Location", "SampleType", "Run", "Methane.Area", "Carbon.dioxide.Area", "Nitrous.oxide..Area")]
+    summary(df)
+    df <- reshape(df, direction = "long",  varying = list(5:7), v.names = "Area",
+      timevar = "gasName", times = c("CH4", "CO2", "N2O"))
+    # summary(df)
+    # View(df)
+    sd_df <- read_excel(fname, sheet="GC_samples")  
+    names(sd_df) <- make.names(names(sd_df))
+    sd_df <- sd_df[c("site", "year", "mon", "mday", "chamberID", "time_label")]
+  }
+    
+  if (dataSource == "aGC"){
+    df <- read_excel(fname, sheet="Sheet1", 
+      col_types = c("text", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text"))
+    names(df) <- make.names(names(df))
+    df <- subset(df,  !is.na(df$Area))
 
-  # need to parse Sample Name data into the df from a list
-  sampleData <- strsplit(df$Sample.Name, "_")
-  sd_df <- data.frame(matrix(unlist(sampleData), nrow=length(sampleData), byrow=T),stringsAsFactors=FALSE)
-  colnames(sd_df) <- c("site", "year", "mon", "mday", "chamberID", "time_label")
-  #str(sd_df)
+    # need to parse Sample Name data into the df from a list
+    sampleData <- strsplit(df$Sample.Name, "_")
+    sd_df <- data.frame(matrix(unlist(sampleData), nrow=length(sampleData), byrow=T),stringsAsFactors=FALSE)
+    colnames(sd_df) <- c("site", "year", "mon", "mday", "chamberID", "time_label")
+  }
+  
   df <- data.frame(df, sd_df)
   
   #### Simplest quick fix:
@@ -191,15 +210,17 @@ standardiseNames <- function(df){
 #'
 #' This function reads a GC input file.
 #' @param fname A GC input file.
+#' @param dataSource A character string identifying the source of the data: "aGC" from the Agilent GC, or "SRUC_GC" from the SRUC_GC.
 #' @keywords GC input
 #' @export
 #' @seealso \code{\link{convert_GC_output}} for the higher-level function which calls this.
 #' @examples
 #' read_GC_input(fname)
 
-read_GC_input <- function(fname){
+read_GC_input <- function(fname, dataSource = "aGC"){
 #fname <- "S:/DISE_Instrumentation/GC/Agilent/GC_data/Juliette/20160810_JM.xls"
-  fname_GC_input <- paste(file_path_sans_ext(fname), "_GC_input.xlsx", sep="")
+  if (dataSource == "aGC") fname_GC_input <- paste(file_path_sans_ext(fname), "_GC_input.xlsx", sep="")
+  if (dataSource == "SRUC_GC") fname_GC_input <- fname
   st_df <- read_excel(fname_GC_input, sheet="Standards")
   names(st_df) <- make.names(names(st_df))
   st_df <- standardiseNames(st_df)
@@ -239,6 +260,7 @@ read_GC_input <- function(fname){
 #'
 #' This function converts Agilent GC output.
 #' @param filelistIn A file listing the Agilent GC output files to be processed.
+#' @param dataSource A character string identifying the source of the data: "aGC" from the Agilent GC, or "SRUC_GC" from the SRUC_GC.
 #' @keywords GC input
 #' @export
 #' @seealso \code{\link{calcFlux}} for the higher-level function which calls this.
@@ -246,9 +268,9 @@ read_GC_input <- function(fname){
 #' convert_GC_output("f:/0Peter/misc/stats/GCflux/filelist_aGCxls.txt")
 #' convert_GC_output("S:/DISE_Instrumentation/GC/Agilent/processing/filelist_aGCxls.txt")
 
-convert_GC_output <- function(filelistIn){
+convert_GC_output <- function(filelistIn, dataSource = "aGC"){
 #filelistIn <- "S:/DISE_Instrumentation/GC/Agilent/processing/filelist_aGCxls.txt"
-#filelistIn <- "./filelist_aGCxls.txt"
+#filelistIn <- "../data-raw/filelist_aGCxls.txt"
   filelistOut <- "./filelist.txt"
 
   ### if mixed single digit numbers & text, we need extra check / padding:
@@ -260,8 +282,8 @@ convert_GC_output <- function(filelistIn){
   }
 
   # add yaml header lines
-  yamlHeader1 <- "dataSource: aGC  # Options are aGC, GC, QCL, GodChamber, EGM, VaisalaChamber"
-  yamlHeader2 <- "gasName: [N2O] # not used if dataSource = aGC"
+  yamlHeader1 <- paste("dataSource:", dataSource, "# Options are aGC, SRUC_GC, QCL, GodChamber, EGM, VaisalaChamber")
+  yamlHeader2 <- "gasName: [N2O] # not used if dataSource = aGC or SRUC_GC"
   write(yamlHeader1, file = filelistOut)
   write(yamlHeader2, file = filelistOut, append=TRUE)
 
@@ -272,14 +294,15 @@ convert_GC_output <- function(filelistIn){
   for (i in 1:nFileSet){
   #i <- 1
     files_df[i,2] <- paste(file_path_sans_ext(files_df[i,1]), ".csv", sep="")
-    df      <- read_GC_output(files_df$V1[i])
-    gcinput <- read_GC_input(files_df$V1[i])
+    df      <- read_GC_output(files_df$V1[i], dataSource)
+    gcinput <- read_GC_input(files_df$V1[i], dataSource)
     
     df <- merge(df, gcinput$st_wdf, by.x=c("gasName", "chamberID"), sort = TRUE,
               all.x = TRUE,   by.y=c("gasName", "standardID")) 
 
     # convert numbers to characters, keeping leadiong zero for single digits, as in Sample Name
     gcinput$ch_df$chamberID <- str_pad(gcinput$ch_df$chamberID, width = 2, side = "left", pad = "0")  
+    df$chamberID <- str_pad(                      df$chamberID, width = 2, side = "left", pad = "0")  
     
     df <- merge(df, gcinput$ch_df, by.x=c("site", "chamberID"), sort = TRUE, all.x = TRUE,  
                                    by.y=c("site", "chamberID"))
@@ -291,10 +314,19 @@ convert_GC_output <- function(filelistIn){
 
     # match by "sampleName", so remove duplicate columns
     gcinput$sm_df <- subset(gcinput$sm_df, select = -c(site, chamberID, year, mon, mday, time_label))
-    df <- merge(df, gcinput$sm_df, sort = TRUE, all.x = TRUE, # suffixes = c("",".y"),
-      by.x=c("sampleName"), 
-      by.y=c("sampleName"))
-      
+    if (dataSource == "aGC"){
+      df <- merge(df, gcinput$sm_df, sort = TRUE, all.x = TRUE, # suffixes = c("",".y"),
+        by.x=c("sampleName"), 
+        by.y=c("sampleName"))
+    }
+    # SampleName not included in SRUC GC_data, so use Sample instead
+    if (dataSource == "SRUC_GC"){
+      df <- merge(df, gcinput$sm_df, sort = TRUE, all.x = TRUE, # suffixes = c("",".y"),
+        by.x=c("Sample"), 
+        by.y=c("Sample"))
+    }
+ 
+    if (any(duplicated(df))) print("Duplicates found in GC input/ouput")
     #df %>% View
     #nrow(df)
     #nrow(distinct(df))
@@ -316,7 +348,8 @@ convert_GC_output <- function(filelistIn){
     #df$Plot <- df$chamberID
 
     # put in original order (Vial no. is order in autosampler)
-    df <- arrange(df, gasName, Vial)
+    if (dataSource == "aGC") df <- arrange(df, gasName, Vial)
+    if (dataSource == "SRUC_GC") df <- arrange(df, gasName, Sample)
     #df %>% View
     names(df)  
     summary(gcinput$sm_df)  
@@ -637,3 +670,13 @@ calcFlux <- function(filelist){
   # write output data frame to file
   write.table(out_df, file = fileOut, append = TRUE, sep = ",", row.names = FALSE, col.names = TRUE)
 }
+
+# library(plyr)
+# library(dplyr)
+# library(stringr)
+# library(yaml)
+# library(tools)
+# library(nlme)
+# library(ggplot2)
+# library(HMR)
+# library(readxl)

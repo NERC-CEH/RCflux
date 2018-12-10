@@ -1,0 +1,3 @@
+dataSource: SRUC_GC # Options are aGC, SRUC_GC, QCL, GodChamber, EGM, VaisalaChamber
+gasName: [N2O] # not used if dataSource = aGC or SRUC_GC
+"../data-raw/SRUC_template_GC_input.csv"

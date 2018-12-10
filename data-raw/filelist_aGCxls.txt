@@ -1,1 +1,1 @@
-"./RCflux/data-raw/20160711_JM.xls"
+"../data-raw/SRUC_template_GC_input.xlsx"
