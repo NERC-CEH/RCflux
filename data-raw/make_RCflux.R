@@ -8,7 +8,8 @@ getwd()
 #create("RCflux") # if it doesn't already exist
 # Add functions in files to R/ directory 
 
-setwd("../")
+setwd("C:/Users/plevy/Documents/RCflux")
+#setwd("../")
 
 check_man()
 document()

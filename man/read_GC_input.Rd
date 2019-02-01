@@ -4,10 +4,12 @@
 \alias{read_GC_input}
 \title{Reads a GC input file}
 \usage{
-read_GC_input(fname)
+read_GC_input(fname, dataSource = "aGC")
 }
 \arguments{
 \item{fname}{A GC input file.}
+
+\item{dataSource}{A character string identifying the source of the data: "aGC" from the Agilent GC, or "SRUC_GC" from the SRUC_GC.}
 }
 \description{
 This function reads a GC input file.

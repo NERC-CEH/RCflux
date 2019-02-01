@@ -2,11 +2,16 @@ rm(list=ls(all=TRUE))
 #install.packages("nlme")
 library(RCflux)
 getwd()
+setwd("C:/Users/plevy/OneDrive - NERC/Stephanie_RCflux")
 
 convert_GC_output("S:/DISE_Instrumentation/GC/Agilent/processing/filelist_aGCxls.txt")
 convert_GC_output("S:/DISE_People/Nick_Cowan/CINAG_RFlux/filelist_aGCxls.txt")
 convert_GC_output("d:/0Peter/misc/stats/GCflux/filelist_aGCxls.txt")
 convert_GC_output("./filelist_aGCxls.txt")
+convert_GC_output("C:/Users/plevy/OneDrive - NERC/Stephanie_RCflux/filelist_aGCxls.txt", dataSource = "SRUC_GC")
+
 calcFlux("./filelist.txt")
 calcFlux("S:/DISE_Instrumentation/GC/Agilent/processing/filelist.txt")
 calcFlux("S:/DISE_People/Nick_Cowan/CINAG_RFlux/filelist.txt")
+
+calcFlux("C:/Users/plevy/OneDrive - NERC/Stephanie_RCflux/filelist.txt")

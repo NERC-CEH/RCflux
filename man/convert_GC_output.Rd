@@ -4,10 +4,12 @@
 \alias{convert_GC_output}
 \title{Converts Agilent GC output to a standard format}
 \usage{
-convert_GC_output(filelistIn)
+convert_GC_output(filelistIn, dataSource = "aGC")
 }
 \arguments{
 \item{filelistIn}{A file listing the Agilent GC output files to be processed.}
+
+\item{dataSource}{A character string identifying the source of the data: "aGC" from the Agilent GC, or "SRUC_GC" from the SRUC_GC.}
 }
 \description{
 This function converts Agilent GC output.

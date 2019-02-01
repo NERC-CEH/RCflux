@@ -392,7 +392,7 @@ calcFlux <- function(filelist){
     #dev.new()
     in_df <-  read.csv(files_df[iFileSet,1], header = TRUE, na.strings = c("NA", "NAN", "*", "-99"), row.names=NULL)  
 
-    if (readin1$dataSource == "aGC"){
+    if (readin1$dataSource == "aGC" | readin1$dataSource == "SRUC_GC"){
       v_gasName <-   as.character(unique(in_df$gasName))
       nGas <-              length(unique(in_df$gasName))
     }
@@ -532,11 +532,13 @@ calcFlux <- function(filelist){
       
       # write a text file for input to HMR
       HMRinput_df <- cbind.data.frame(as.character(dfg$mmntID), (dfg$rho.y * dfg$volume_m3), dfg$area_m2, dfg$TimeSinceClosure, dfg$Cobs)
-      colnames(HMRinput_df)<- c("Series", "V", "A", "Time", "Concentration") 
+      colnames(HMRinput_df)<- c("Series", "V", "A", "Time", "Concentration")
+      # HMR needs sample in ascending time order
+      HMRinput_df <- arrange(HMRinput_df, Series, Time)
       write.table(HMRinput_df, file = "HMRinput.txt", sep = ",", row.names = FALSE, col.names = TRUE)	
       # run HMR using ppm input ### need to multiply v by rho
       #dev.new() # no graphics output, but removes any plots on existing device
-      HMR(filename= 'HMRinput.txt', series = NA, dec = '.', sep = ',', JPG = FALSE, PS = FALSE,PHMR = FALSE, npred = 500, LR.always = TRUE, FollowHMR = TRUE, ngrid = 1000)
+      HMR(filename= "HMRinput.txt", series = NA, dec = '.', sep = ',', JPG = FALSE, PS = FALSE,PHMR = FALSE, npred = 500, LR.always = TRUE, FollowHMR = TRUE, ngrid = 1000)
       #Read HMR output file ## just assign it from hmr function?
       HMRoutput_df <- read.table("HMR - HMRinput.txt", skip = 1, sep=",", 
       colClasses = c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "character", "character", "numeric", "numeric", "numeric", "numeric", "numeric", "character"))
