@@ -538,11 +538,11 @@ calcFlux <- function(filelist){
       write.table(HMRinput_df, file = "HMRinput.txt", sep = ",", row.names = FALSE, col.names = TRUE)	
       # run HMR using ppm input ### need to multiply v by rho
       #dev.new() # no graphics output, but removes any plots on existing device
-      HMR(filename= "HMRinput.txt", series = NA, dec = '.', sep = ',', JPG = FALSE, PS = FALSE,PHMR = FALSE, npred = 500, LR.always = TRUE, FollowHMR = TRUE, ngrid = 1000)
+      HMR(filename= "HMRinput.txt", series = NA, dec = '.', sep = ',', LR.always = TRUE, FollowHMR = TRUE)
       #Read HMR output file ## just assign it from hmr function?
-      HMRoutput_df <- read.table("HMR - HMRinput.txt", skip = 1, sep=",", 
-      colClasses = c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "character", "character", "numeric", "numeric", "numeric", "numeric", "numeric", "character"))
-      colnames(HMRoutput_df)<- c("mmntID","EstFlux", "StdErrEstFlux", "PValue", "Low95", "High95", "Method", "Warning", "LinEstFlux", "LinStdErrEstFlux", "LinPvalue", "LinLow95", "LinHigh95", "LinWarning")
+      HMRoutput_df <- read.table("HMR - HMRinput.txt", skip = 1, sep=",", stringsAsFactors = FALSE)
+      colnames(HMRoutput_df)<- c("mmntID","EstFlux", "StdErrEstFlux", "PValue", "Low95", "High95", "Method", "Warning", "Prefilter", "Prefilter.p", "SatCrit.Warning", "LinEstFlux", "LinStdErrEstFlux", "LinPvalue", "LinLow95", "LinHigh95", "LinWarning")
+      
       HMRoutput_df <- within(HMRoutput_df, EstFlux[Method != "HMR" & Method != "LR"] <- NA)
       HMRoutput_df <- within(HMRoutput_df, Method[Method == "LR"]  <- 1)
       HMRoutput_df <- within(HMRoutput_df, Method[Method == "HMR"] <- 6)
