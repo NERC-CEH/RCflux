@@ -227,7 +227,7 @@ read_GC_input <- function(fname, dataSource = "aGC"){
   # get a list of the varying columns, = gas names
   varying <-   colnames(subset(st_df, select = -standardID))
   # convert from wide to long format
-  st_wdf <- reshape(st_df, direction = "long", varying = varying,
+  st_wdf <- reshape(as.data.frame(st_df), direction = "long", varying = varying,
     timevar = "gasName", v.names = "Known.conc")
   # Adds name for 1st col, in case missing
   colnames(st_wdf)[1] <- "standardID" # necessary?
