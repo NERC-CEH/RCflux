@@ -1,6 +1,6 @@
 Package: RCflux
 Title: Calculate Closed-Chamber Gas Fluxes
-Version: 0.5.3
+Version: 0.5.4
 Authors@R: person("Peter", "Levy", email = "plevy@ceh.ac.uk", role = c("aut", "cre"))
 Description: Calculate closed-chamber gas fluxes.
 Depends:
