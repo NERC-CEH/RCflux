@@ -14,7 +14,7 @@ library(devtools)
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
 
 # need remotes package for function install_github()
-install_github("NERC-CEH/RCflux", auth_token = "9be9c01caa2ba0adce87690587952d75301cf034")
+install_github("NERC-CEH/RCflux")
 library(RCflux)
 # Check version installed
 packageVersion("RCflux")
