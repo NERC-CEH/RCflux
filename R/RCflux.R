@@ -33,7 +33,7 @@ read_GC_output <- function(fname, dataSource = "aGC"){
     names(df)
     df <- df[ c("Sample", "Location", "SampleType", "Run", "Methane.Area", "Carbon.dioxide.Area", "Nitrous.oxide..Area")]
     summary(df)
-    df <- reshape(df, direction = "long",  varying = list(5:7), v.names = "Area",
+    df <- reshape(as.data.frame(df), direction = "long",  varying = list(5:7), v.names = "Area",
       timevar = "gasName", times = c("CH4", "CO2", "N2O"))
     # summary(df)
     # View(df)
